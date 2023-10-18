@@ -39,14 +39,14 @@ where
 {
     pub mod_type: ModType,
     pub value: f32,
-    _phantom: PhantomData<T>,
+    pub _phantom: PhantomData<T>,
 }
 
 impl<T> StatValueChange<T>
 where
     T: RPGStat,
 {
-    pub fn new(mod_type: ModType, value: f32) -> Self {
+    pub fn new(value: f32, mod_type: ModType) -> Self {
         Self {
             mod_type,
             value,

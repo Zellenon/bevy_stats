@@ -118,7 +118,11 @@ pub fn change_resource<T: RPGResource>(
 ) {
     for ResourceChangeEvent { change, target } in events.iter() {
         let (new_base, new_percentage) = {
-            let (base, stat) = query.get(*target).unwrap();
+            let response = query.get(*target);
+            if let Err(_) = response {
+                continue;
+            }
+            let (base, stat) = response.unwrap();
             let mut new_base = change.apply(base.current);
             if !T::can_negative() {
                 new_base = new_base.max(0.);
@@ -133,59 +137,3 @@ pub fn change_resource<T: RPGResource>(
         resource.percent = new_percentage;
     }
 }
-
-// fn update_modded_resources_addmul<T: RPGResource>(
-//     mut resources: Query<&mut Resource<T>>,
-//     mods: Query<&StatValueChange<T>, With<StatModifier>>,
-// ) {
-//     for mut resource in resources.iter_mut() {
-//         // TODO: Remove dead modifiers
-//         resource.value_current = mul_stats(
-//             add_stats(resource.value_base, &resource.mods, &mods),
-//             &resource.mods,
-//             &mods,
-//         );
-//         resource.max_current = mul_stats(
-//             add_stats(resource.base, &resource.mods, &mods),
-//             &resource.mods,
-//             &mods,
-//         );
-//     }
-// }
-
-// fn update_modded_resources_muladd<T: RPGResource>(
-//     mut resources: Query<&mut Resource<T>>,
-//     mods: Query<&StatValueChange<T>, With<StatModifier>>,
-// ) {
-//     for mut resource in resources.iter_mut() {
-//         // TODO: Remove dead modifiers
-//         resource.current = add_stats(
-//             mul_stats(resource.base, &resource.mods, &mods),
-//             &resource.mods,
-//             &mods,
-//         );
-//     }
-// }
-
-// fn update_modded_resources_sumdiff<T: RPGResource>(
-//     mut resources: Query<&mut Resource<T>>,
-//     mods: Query<&StatValueChange<T>, With<StatModifier>>,
-// ) {
-//     for mut resource in resources.iter_mut() {
-//         // TODO: Remove dead modifiers
-//         resource.current = add_stats(resource.base, &resource.mods, &mods)
-//             + mul_diff(resource.base, &resource.mods, &mods);
-//     }
-// }
-
-// fn update_modded_resources_avediff<T: RPGResource>(
-//     mut resources: Query<&mut Resource<T>>,
-//     mods: Query<&StatValueChange<T>, With<StatModifier>>,
-// ) {
-//     for mut resource in resources.iter_mut() {
-//         // TODO: Remove dead modifiers
-//         resource.current = (add_stats(resource.base, &resource.mods, &mods)
-//             + mul_diff(resource.base, &resource.mods, &mods))
-//             / resource.mods.len() as f32;
-//     }
-// }
