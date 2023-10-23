@@ -13,7 +13,7 @@ use bevy_stats::{
 };
 use rand::seq::SliceRandom;
 
-DeclareResources!(Health);
+DeclareResources!(Health, Mana);
 DeclareStat!(Damage);
 
 #[derive(Bundle)]

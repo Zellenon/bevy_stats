@@ -27,7 +27,7 @@ macro_rules! DeclareResources {
         pub struct $a;
         impl RPGStat for $a {}
         impl RPGResource for $a {}
-        ),*
+        )*
     };
 }
 
@@ -38,6 +38,6 @@ macro_rules! DeclareStat {
         #[derive(TypePath)]
         pub struct $a;
         impl RPGStat for $a {}
-        ),*
+        )*
     };
 }
