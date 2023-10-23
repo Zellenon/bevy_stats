@@ -19,19 +19,25 @@ impl Plugin for StatPlugin {
     }
 }
 
-// fn do_stat_change<T>(
-//     mut change_events: EventReader<StatChangeEvent<T>>,
-//     mut targets: Query<&mut Stat<T>>,
-// ) where
-//     T: RPGStat,
-// {
-//     for StatChangeEvent {
-//         target,
-//         amount,
-//         phantom: _,
-//     } in change_events.iter()
-//     {
-//         let mut target_stat = targets.get_mut(*target).unwrap();
-//         target_stat.current = target_stat.current_value() + amount;
-//     }
-// }
+#[macro_export]
+macro_rules! DeclareResources {
+    ($($a:ident),*) => {
+        $(
+        #[derive(TypePath)]
+        pub struct $a;
+        impl RPGStat for $a {}
+        impl RPGResource for $a {}
+        ),*
+    };
+}
+
+#[macro_export]
+macro_rules! DeclareStat {
+    ($($a:ident),*) => {
+        $(
+        #[derive(TypePath)]
+        pub struct $a;
+        impl RPGStat for $a {}
+        ),*
+    };
+}

@@ -9,18 +9,12 @@ use bevy::{
 use bevy_stats::{
     statmod::{ResourceChangeEvent, StatValueChange},
     systems::{change_resource, StatRegisterable},
-    RPGResource, RPGStat, Resource, Stat,
+    DeclareResources, DeclareStat, RPGResource, RPGStat, Resource, Stat,
 };
 use rand::seq::SliceRandom;
 
-#[derive(TypePath)]
-pub struct Health;
-#[derive(TypePath)]
-pub struct Damage;
-
-impl RPGStat for Health {}
-impl RPGResource for Health {}
-impl RPGStat for Damage {}
+DeclareResources!(Health);
+DeclareStat!(Damage);
 
 #[derive(Bundle)]
 struct Fighter {
