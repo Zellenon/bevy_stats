@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use bevy::{
     prelude::{Component, Entity, Query, With},
-    reflect::{Reflect, TypePath},
+    reflect::Reflect,
 };
 
 use crate::{
@@ -10,7 +10,7 @@ use crate::{
     systems::{add_stats, mul_diff, mul_stats},
 };
 
-pub trait RPGStat: 'static + Send + Sync + TypePath {
+pub trait RPGStat: 'static + Send + Sync + Reflect {
     fn can_negative() -> bool {
         false
     }
@@ -25,7 +25,7 @@ pub trait RPGStat: 'static + Send + Sync + TypePath {
 }
 
 #[derive(Component, Reflect)]
-pub struct Stat<T: TypePath> {
+pub struct Stat<T: Reflect> {
     pub base: f32,
     pub current: f32,
     pub(crate) mods: Vec<Entity>,
@@ -33,7 +33,7 @@ pub struct Stat<T: TypePath> {
     _phantom: PhantomData<T>,
 }
 
-impl<T: TypePath> Stat<T>
+impl<T: Reflect> Stat<T>
 where
     T: RPGStat,
 {

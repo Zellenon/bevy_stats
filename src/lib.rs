@@ -23,7 +23,7 @@ impl Plugin for StatPlugin {
 macro_rules! DeclareResources {
     ($($a:ident),*) => {
         $(
-        #[derive(TypePath)]
+        #[derive(Reflect)]
         pub struct $a;
         impl RPGStat for $a {}
         impl RPGResource for $a {}
@@ -35,7 +35,7 @@ macro_rules! DeclareResources {
 macro_rules! DeclareStat {
     ($($a:ident),*) => {
         $(
-        #[derive(TypePath)]
+        #[derive(Reflect)]
         pub struct $a;
         impl RPGStat for $a {}
         )*

@@ -1,9 +1,9 @@
+use bevy::reflect::Reflect;
 use bevy::{
     prelude::{
         App, Bundle, ClearColor, Color, Commands, DespawnRecursiveExt, Entity, Event, EventReader,
         EventWriter, IntoSystemConfigs, Name, Query, Startup, Update, With,
     },
-    reflect::TypePath,
     DefaultPlugins,
 };
 use bevy_stats::{

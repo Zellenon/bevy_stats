@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use bevy::{
     prelude::{Commands, Component, Entity, Query, Without},
-    reflect::{Reflect, TypePath},
+    reflect::Reflect,
 };
 
 use crate::{RPGStat, Stat};
@@ -33,14 +33,14 @@ pub trait RPGResource: RPGStat {
 }
 
 #[derive(Component, Reflect)]
-pub struct Resource<T: TypePath> {
+pub struct Resource<T: Reflect> {
     pub current: f32,
     pub percent: f32,
     #[reflect(ignore)]
     pub _phantom: PhantomData<T>,
 }
 
-impl<T: TypePath> Resource<T>
+impl<T: Reflect> Resource<T>
 where
     T: RPGResource,
 {
