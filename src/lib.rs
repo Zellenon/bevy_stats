@@ -70,3 +70,26 @@ impl StatRegisterable for App {
         return self;
     }
 }
+
+#[macro_export]
+macro_rules! DeclareResources {
+    ($($a:ident),*) => {
+        $(
+        #[derive(Reflect)]
+        pub struct $a;
+        impl RPGStat for $a {}
+        impl RPGResource for $a {}
+        )*
+    };
+}
+
+#[macro_export]
+macro_rules! DeclareStat {
+    ($($a:ident),*) => {
+        $(
+        #[derive(Reflect)]
+        pub struct $a;
+        impl RPGStat for $a {}
+        )*
+    };
+}
