@@ -8,8 +8,8 @@ use bevy::{
 };
 use bevy_stats::{
     statmod::{ResourceChangeEvent, StatValueChange},
-    systems::{change_resource, StatRegisterable},
-    RPGResource, RPGStat, Resource, Stat,
+    systems::change_resource,
+    RPGResource, RPGStat, Resource, Stat, StatRegisterable,
 };
 use rand::seq::SliceRandom;
 
@@ -32,7 +32,7 @@ struct Fighter {
 pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);
-    app.insert_resource(ClearColor(Color::rgb(
+    app.insert_resource(ClearColor(Color::srgb(
         0xA9 as f32 / 255.0,
         0xA9 as f32 / 255.0,
         0xAF as f32 / 255.0,
@@ -118,7 +118,7 @@ fn do_attack(
     names: Query<&Name>,
     mut damages: EventWriter<ResourceChangeEvent<Health>>,
 ) {
-    for FightEvent { attacker, defender } in fights.iter() {
+    for FightEvent { attacker, defender } in fights.read() {
         let damage = damage_stats.get(*attacker).unwrap().current_value();
         println!(
             "{} hits {}. He takes {} damage.",
@@ -129,7 +129,7 @@ fn do_attack(
         damages.send(ResourceChangeEvent {
             change: StatValueChange::offset(-0.5 * damage),
             target: *defender,
-        })
+        });
     }
 }
 

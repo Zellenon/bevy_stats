@@ -64,43 +64,72 @@ where
 
 pub(crate) fn update_modded_stats_addmul<T: RPGStat>(
     mut stats: Query<&mut Stat<T>>,
-    mods: Query<&StatValueChange<T>, With<StatModifier>>,
+    mut mods: Query<&StatValueChange<T>, With<StatModifier>>,
 ) {
     for mut stat in stats.iter_mut() {
         // TODO: Remove dead modifiers
-        stat.current = mul_stats(add_stats(stat.base, &stat.mods, &mods), &stat.mods, &mods);
+        stat.current = mul_stats::<T>(
+            add_stats::<T>(
+                stat.base,
+                &stat.mods,
+                &mut mods.transmute_lens::<&StatValueChange<_>>(),
+            ),
+            &stat.mods,
+            &mut mods.transmute_lens::<&StatValueChange<_>>(),
+        );
     }
 }
 
 pub(crate) fn update_modded_stats_muladd<T: RPGStat>(
     mut stats: Query<&mut Stat<T>>,
-    mods: Query<&StatValueChange<T>, With<StatModifier>>,
+    mut mods: Query<&StatValueChange<T>, With<StatModifier>>,
 ) {
     for mut stat in stats.iter_mut() {
         // TODO: Remove dead modifiers
-        stat.current = add_stats(mul_stats(stat.base, &stat.mods, &mods), &stat.mods, &mods);
+        stat.current = add_stats::<T>(
+            mul_stats::<T>(
+                stat.base,
+                &stat.mods,
+                &mut mods.transmute_lens::<&StatValueChange<_>>(),
+            ),
+            &stat.mods,
+            &mut mods.transmute_lens::<&StatValueChange<_>>(),
+        );
     }
 }
 
 pub(crate) fn update_modded_stats_sumdiff<T: RPGStat>(
     mut stats: Query<&mut Stat<T>>,
-    mods: Query<&StatValueChange<T>, With<StatModifier>>,
+    mut mods: Query<&StatValueChange<T>, With<StatModifier>>,
 ) {
     for mut stat in stats.iter_mut() {
         // TODO: Remove dead modifiers
-        stat.current =
-            add_stats(stat.base, &stat.mods, &mods) + mul_diff(stat.base, &stat.mods, &mods);
+        stat.current = add_stats::<T>(
+            stat.base,
+            &stat.mods,
+            &mut mods.transmute_lens::<&StatValueChange<_>>(),
+        ) + mul_diff::<T>(
+            stat.base,
+            &stat.mods,
+            &mut mods.transmute_lens::<&StatValueChange<_>>(),
+        );
     }
 }
 
 pub(crate) fn update_modded_stats_avediff<T: RPGStat>(
     mut stats: Query<&mut Stat<T>>,
-    mods: Query<&StatValueChange<T>, With<StatModifier>>,
+    mut mods: Query<&StatValueChange<T>, With<StatModifier>>,
 ) {
     for mut stat in stats.iter_mut() {
         // TODO: Remove dead modifiers
-        stat.current = (add_stats(stat.base, &stat.mods, &mods)
-            + mul_diff(stat.base, &stat.mods, &mods))
-            / stat.mods.len() as f32;
+        stat.current = (add_stats::<T>(
+            stat.base,
+            &stat.mods,
+            &mut mods.transmute_lens::<&StatValueChange<_>>(),
+        ) + mul_diff::<T>(
+            stat.base,
+            &stat.mods,
+            &mut mods.transmute_lens::<&StatValueChange<_>>(),
+        )) / stat.mods.len() as f32;
     }
 }

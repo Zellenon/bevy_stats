@@ -1,9 +1,17 @@
+use crate::resource::ensure_max_stat_with_percentage;
+use crate::statmod::StatChangeEvent;
 use bevy::prelude::*;
 
+use resource::ensure_max_stat;
 pub use resource::{RPGResource, Resource};
+use stat::{
+    update_modded_stats_addmul, update_modded_stats_avediff, update_modded_stats_muladd,
+    update_modded_stats_sumdiff,
+};
 pub use stat::{RPGStat, Stat};
 pub use statmod::DeleteStatMod;
-use systems::delete_stat_mod;
+use statmod::{ModStyle, ResourceChangeEvent};
+use systems::{change_resource, delete_stat_mod};
 pub mod resource;
 pub mod stat;
 pub mod statmod;
@@ -19,19 +27,46 @@ impl Plugin for StatPlugin {
     }
 }
 
-// fn do_stat_change<T>(
-//     mut change_events: EventReader<StatChangeEvent<T>>,
-//     mut targets: Query<&mut Stat<T>>,
-// ) where
-//     T: RPGStat,
-// {
-//     for StatChangeEvent {
-//         target,
-//         amount,
-//         phantom: _,
-//     } in change_events.iter()
-//     {
-//         let mut target_stat = targets.get_mut(*target).unwrap();
-//         target_stat.current = target_stat.current_value() + amount;
-//     }
-// }
+pub trait StatRegisterable {
+    fn register_stat<T: RPGStat + TypePath>(&mut self) -> &mut App;
+    fn register_resource<T: RPGResource + TypePath>(&mut self) -> &mut App;
+}
+
+impl StatRegisterable for App {
+    fn register_stat<T: RPGStat + TypePath>(&mut self) -> &mut App {
+        self.register_type::<Stat<T>>();
+        self.add_event::<StatChangeEvent<T>>();
+
+        match T::modstyle() {
+            ModStyle::AddMul => {
+                self.add_systems(Update, update_modded_stats_addmul::<T>);
+            }
+            ModStyle::MulAdd => {
+                self.add_systems(Update, update_modded_stats_muladd::<T>);
+            }
+            ModStyle::AverageDifferences => {
+                self.add_systems(Update, update_modded_stats_avediff::<T>);
+            }
+            ModStyle::SumDifferences => {
+                self.add_systems(Update, update_modded_stats_sumdiff::<T>);
+            }
+        }
+        return self;
+    }
+
+    fn register_resource<T: RPGResource + TypePath>(&mut self) -> &mut App {
+        self.register_stat::<T>();
+        self.register_type::<Resource<T>>();
+        self.add_event::<ResourceChangeEvent<T>>();
+
+        self.add_systems(
+            Update,
+            (
+                change_resource::<T>,
+                ensure_max_stat::<T>,
+                ensure_max_stat_with_percentage::<T>,
+            ),
+        );
+        return self;
+    }
+}
