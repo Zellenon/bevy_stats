@@ -1,11 +1,13 @@
 use bevy::prelude::*;
 
-use resource::{ensure_max_stat, ensure_max_stat_with_percentage, RPGResource, Resource};
+use resource::{ensure_max_stat, ensure_max_stat_with_percentage};
+pub use resource::{RPGResource, Resource};
 use stat::{
     update_modded_stats_addmul, update_modded_stats_avediff, update_modded_stats_muladd,
-    update_modded_stats_sumdiff, RPGStat, Stat,
+    update_modded_stats_sumdiff,
 };
-use statmod::{DeleteStatMod, ModStyle, ResourceChangeEvent, StatChangeEvent};
+pub use stat::{RPGStat, Stat};
+pub use statmod::{DeleteStatMod, ModStyle, ResourceChangeEvent, StatChangeEvent};
 use systems::{change_resource, delete_stat_mod};
 
 pub mod resource;
