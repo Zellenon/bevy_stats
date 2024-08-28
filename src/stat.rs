@@ -1,9 +1,8 @@
-use std::marker::PhantomData;
-
 use bevy::{
     prelude::{Component, Entity, Query, With},
     reflect::Reflect,
 };
+use std::marker::PhantomData;
 
 use crate::{
     statmod::{ModStyle, MultiplierStyle, StatModifier, StatValueChange},
@@ -24,7 +23,7 @@ pub trait RPGStat: 'static + Send + Sync + Reflect {
     }
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Debug, Reflect, PartialEq, Clone)]
 pub struct Stat<T: Reflect> {
     pub base: f32,
     pub current: f32,

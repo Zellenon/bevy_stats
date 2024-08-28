@@ -1,22 +1,19 @@
-use crate::resource::ensure_max_stat_with_percentage;
-use crate::statmod::StatChangeEvent;
 use bevy::prelude::*;
 
-use resource::ensure_max_stat;
-pub use resource::{RPGResource, Resource};
+use resource::{ensure_max_stat, ensure_max_stat_with_percentage, RPGResource, Resource};
 use stat::{
     update_modded_stats_addmul, update_modded_stats_avediff, update_modded_stats_muladd,
-    update_modded_stats_sumdiff,
+    update_modded_stats_sumdiff, RPGStat, Stat,
 };
-pub use stat::{RPGStat, Stat};
-pub use statmod::DeleteStatMod;
-use statmod::{ModStyle, ResourceChangeEvent};
+use statmod::{DeleteStatMod, ModStyle, ResourceChangeEvent, StatChangeEvent};
 use systems::{change_resource, delete_stat_mod};
+
 pub mod resource;
 pub mod stat;
 pub mod statmod;
 pub mod systems;
 
+#[derive(Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub struct StatPlugin;
 
 impl Plugin for StatPlugin {

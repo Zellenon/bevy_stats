@@ -1,10 +1,10 @@
-use std::marker::PhantomData;
-
+use bevy::prelude::Reflect;
 use bevy::prelude::{Component, Entity, Event};
+use std::marker::PhantomData;
 
 use crate::{RPGResource, RPGStat};
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialOrd, Ord, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub enum ModStyle {
     AddMul,
     MulAdd,
@@ -12,19 +12,19 @@ pub enum ModStyle {
     SumDifferences,
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialOrd, Ord, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub enum ModType {
     Offset,
     Multiplier,
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialOrd, Ord, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub enum MultiplierStyle {
     Additive,
     Multiplicative,
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialOrd, Ord, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub enum ResourceModUpdateStyle {
     ScaleBoth,
     ScaleOnBuff,
@@ -32,7 +32,7 @@ pub enum ResourceModUpdateStyle {
     NoScale,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug, Reflect, PartialEq, Clone, Copy)]
 pub struct StatValueChange<T>
 where
     T: RPGStat,
@@ -83,13 +83,13 @@ where
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub struct StatModifier;
 
-#[derive(Event)]
+#[derive(Event, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub struct DeleteStatMod(pub Entity);
 
-#[derive(Event)]
+#[derive(Event, Debug, Reflect, PartialEq, Clone, Copy)]
 pub struct StatChangeEvent<T>
 where
     T: RPGStat,
@@ -98,7 +98,7 @@ where
     pub target: Entity,
 }
 
-#[derive(Event)]
+#[derive(Event, Debug, Reflect, PartialEq, Clone, Copy)]
 pub struct ResourceChangeEvent<T>
 where
     T: RPGResource,

@@ -1,9 +1,8 @@
-use std::marker::PhantomData;
-
 use bevy::{
     prelude::{Commands, Component, Entity, Query, Without},
     reflect::Reflect,
 };
+use std::marker::PhantomData;
 
 use crate::{RPGStat, Stat};
 

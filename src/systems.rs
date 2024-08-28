@@ -88,4 +88,3 @@ pub fn change_resource<T: RPGResource>(
         resource.percent = new_percentage;
     }
 }
-

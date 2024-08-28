@@ -8,9 +8,11 @@ use bevy::{
 };
 use bevy_stats::StatRegisterable;
 use bevy_stats::{
+    resource::{RPGResource, Resource},
+    stat::{RPGStat, Stat},
     statmod::{ResourceChangeEvent, StatValueChange},
     systems::change_resource,
-    DeclareResources, DeclareStat, RPGResource, RPGStat, Resource, Stat,
+    DeclareResources, DeclareStat,
 };
 use rand::seq::SliceRandom;
 
