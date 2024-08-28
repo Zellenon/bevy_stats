@@ -12,7 +12,7 @@ pub enum ResourceModScaleStyle {
     NoScale,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug, Reflect, PartialEq, Clone)]
 pub struct InitResourcePercentagePolicy {
     pub percentage: f32,
 }
@@ -31,7 +31,7 @@ pub trait RPGResource: RPGStat {
     }
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Debug, Reflect, PartialEq, Clone)]
 pub struct Resource<T: Reflect> {
     pub current: f32,
     pub percent: f32,
