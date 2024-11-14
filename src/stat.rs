@@ -9,7 +9,7 @@ use crate::{
     systems::{add_stats, mul_diff, mul_stats},
 };
 
-pub trait RPGStat: 'static + Send + Sync + Reflect {
+pub trait RPGStat: 'static + Send + Sync + Reflect + Copy {
     fn can_negative() -> bool {
         false
     }
@@ -24,7 +24,7 @@ pub trait RPGStat: 'static + Send + Sync + Reflect {
 }
 
 #[derive(Component, Debug, Reflect, PartialEq, Clone)]
-pub struct Stat<T: Reflect> {
+pub struct Stat<T: Reflect + Clone + Copy> {
     pub base: f32,
     pub current: f32,
     pub(crate) mods: Vec<Entity>,
@@ -32,7 +32,7 @@ pub struct Stat<T: Reflect> {
     _phantom: PhantomData<T>,
 }
 
-impl<T: Reflect> Stat<T>
+impl<T: Reflect + Clone + Copy> Stat<T>
 where
     T: RPGStat,
 {
