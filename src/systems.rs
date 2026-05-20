@@ -1,10 +1,10 @@
 use bevy::{
     ecs::system::QueryLens,
-    prelude::{Commands, Entity, EventReader, Query},
+    prelude::{Commands, Entity, MessageReader, Query},
 };
 
 use crate::{
-    statmod::{DeleteStatMod, ModType, ResourceChangeEvent, StatChangeEvent, StatValueChange},
+    statmod::{DeleteStatMod, ModType, ResourceChangeMessage, StatChangeMessage, StatValueChange},
     RPGResource, RPGStat, Resource, Stat,
 };
 
@@ -47,27 +47,27 @@ pub(crate) fn add_stats<T: RPGStat>(
         .fold(base, |w, v| w + v.value)
 }
 
-pub fn delete_stat_mod(mut commands: Commands, mut events: EventReader<DeleteStatMod>) {
+pub fn delete_stat_mod(mut commands: Commands, mut events: MessageReader<DeleteStatMod>) {
     for DeleteStatMod(entity) in events.read() {
         commands.get_entity(*entity).unwrap().despawn();
     }
 }
 
 pub fn change_stat<T: RPGStat>(
-    mut events: EventReader<StatChangeEvent<T>>,
+    mut events: MessageReader<StatChangeMessage<T>>,
     mut query: Query<&mut Stat<T>>,
 ) {
-    for StatChangeEvent { change, target } in events.read() {
+    for StatChangeMessage { change, target } in events.read() {
         let base = change.apply(query.get(*target).unwrap().base);
         query.get_mut(*target).unwrap().base = base;
     }
 }
 
 pub fn change_resource<T: RPGResource>(
-    mut events: EventReader<ResourceChangeEvent<T>>,
+    mut events: MessageReader<ResourceChangeMessage<T>>,
     mut query: Query<(&mut Resource<T>, &Stat<T>)>,
 ) {
-    for ResourceChangeEvent { change, target } in events.read() {
+    for ResourceChangeMessage { change, target } in events.read() {
         let (new_base, new_percentage) = {
             let response = query.get(*target);
             if let Err(_) = response {

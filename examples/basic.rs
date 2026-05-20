@@ -1,20 +1,20 @@
-use bevy::reflect::Reflect;
 use bevy::{
     prelude::{
-        App, Bundle, ClearColor, Color, Commands, DespawnRecursiveExt, Entity, Event, EventReader,
-        EventWriter, IntoSystemConfigs, Name, Query, Startup, Update, With,
+        App, Bundle, ClearColor, Color, Commands, Entity, IntoScheduleConfigs, Message,
+        MessageReader, MessageWriter, Name, Query, Startup, Update, With,
     },
+    reflect::Reflect,
     DefaultPlugins,
 };
-use bevy_stats::StatRegisterable;
 use bevy_stats::{
     resource::{RPGResource, Resource},
     stat::{RPGStat, Stat},
-    statmod::{ResourceChangeEvent, StatValueChange},
+    statmod::{ResourceChangeMessage, StatValueChange},
     systems::change_resource,
-    DeclareResources, DeclareStat,
+    DeclareResources, DeclareStat, StatRegisterable,
 };
-use rand::seq::SliceRandom;
+
+use rand::prelude::IndexedRandom;
 
 DeclareResources!(Health, Mana);
 DeclareStat!(Damage);
@@ -34,7 +34,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
         0xA9 as f32 / 255.0,
         0xAF as f32 / 255.0,
     )))
-    .add_event::<FightEvent>();
+    .add_message::<FightMessage>();
 
     // ------ Important Stuff ---------
 
@@ -58,8 +58,8 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[derive(Event)]
-struct FightEvent {
+#[derive(Message)]
+struct FightMessage {
     attacker: Entity,
     defender: Entity,
 }
@@ -93,15 +93,16 @@ fn setup(mut commands: Commands) {
 // Everything past this point just makes them slap each other randomly.
 
 // Picks 2 random fighters to slap each other
-fn choose_fight(fighters: Query<Entity, With<Stat<Damage>>>, mut fights: EventWriter<FightEvent>) {
+fn choose_fight(
+    fighters: Query<Entity, With<Stat<Damage>>>,
+    mut fights: MessageWriter<FightMessage>,
+) {
     let fighters: Vec<_> = fighters.iter().collect();
     if fighters.len() < 2 {
         return;
     }
-    let fighters: Vec<_> = fighters
-        .choose_multiple(&mut rand::thread_rng(), 2)
-        .collect();
-    fights.send(FightEvent {
+    let fighters: Vec<_> = fighters.sample(&mut rand::rng(), 2).collect();
+    fights.write(FightMessage {
         attacker: *fighters[0],
         defender: *fighters[1],
     });
@@ -110,12 +111,12 @@ fn choose_fight(fighters: Query<Entity, With<Stat<Damage>>>, mut fights: EventWr
 // Once the 2 fighters are chosen, have the attacker send a "health decrease event" to the
 // defender.
 fn do_attack(
-    mut fights: EventReader<FightEvent>,
+    mut fights: MessageReader<FightMessage>,
     damage_stats: Query<&Stat<Damage>>,
     names: Query<&Name>,
-    mut damages: EventWriter<ResourceChangeEvent<Health>>,
+    mut damages: MessageWriter<ResourceChangeMessage<Health>>,
 ) {
-    for FightEvent { attacker, defender } in fights.read() {
+    for FightMessage { attacker, defender } in fights.read() {
         let damage = damage_stats.get(*attacker).unwrap().current_value();
         println!(
             "{} hits {}. He takes {} damage.",
@@ -123,7 +124,7 @@ fn do_attack(
             names.get(*defender).unwrap(),
             damage
         );
-        damages.send(ResourceChangeEvent {
+        damages.write(ResourceChangeMessage {
             change: StatValueChange::offset(-0.5 * damage),
             target: *defender,
         });
@@ -139,7 +140,8 @@ fn die_on_hp0(
     for (e, health) in healths.iter() {
         if health.current_value() <= 0. {
             println!("{} dies!", names.get(e).unwrap());
-            commands.entity(e).despawn_recursive()
+            commands.entity(e).despawn_children();
+            commands.entity(e).despawn()
         }
     }
 }
