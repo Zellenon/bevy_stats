@@ -7,7 +7,7 @@ use stat::{
     update_modded_stats_sumdiff,
 };
 pub use stat::{RPGStat, Stat};
-pub use statmod::{DeleteStatMod, ModStyle, ResourceChangeEvent, StatChangeEvent};
+pub use statmod::{DeleteStatMod, ModStyle, ResourceChangeMessage, StatChangeMessage};
 use systems::{change_resource, delete_stat_mod};
 
 pub mod resource;
@@ -20,7 +20,7 @@ pub struct StatPlugin;
 
 impl Plugin for StatPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<DeleteStatMod>();
+        app.add_message::<DeleteStatMod>();
         app.add_systems(Update, delete_stat_mod); //TODO: See if Update is the right time to be
                                                   //running this
     }
@@ -34,7 +34,7 @@ pub trait StatRegisterable {
 impl StatRegisterable for App {
     fn register_stat<T: RPGStat + TypePath>(&mut self) -> &mut App {
         self.register_type::<Stat<T>>();
-        self.add_event::<StatChangeEvent<T>>();
+        self.add_message::<StatChangeMessage<T>>();
 
         match T::modstyle() {
             ModStyle::AddMul => {
@@ -56,7 +56,7 @@ impl StatRegisterable for App {
     fn register_resource<T: RPGResource + TypePath>(&mut self) -> &mut App {
         self.register_stat::<T>();
         self.register_type::<Resource<T>>();
-        self.add_event::<ResourceChangeEvent<T>>();
+        self.add_message::<ResourceChangeMessage<T>>();
 
         self.add_systems(
             Update,

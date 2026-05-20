@@ -1,5 +1,5 @@
 use bevy::prelude::Reflect;
-use bevy::prelude::{Component, Entity, Event};
+use bevy::prelude::{Component, Entity, Message};
 use std::marker::PhantomData;
 
 use crate::{RPGResource, RPGStat};
@@ -86,11 +86,11 @@ where
 #[derive(Component, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub struct StatModifier;
 
-#[derive(Event, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
+#[derive(Message, Debug, Reflect, PartialEq, Eq, Clone, Copy)]
 pub struct DeleteStatMod(pub Entity);
 
-#[derive(Event, Debug, Reflect, PartialEq, Clone, Copy)]
-pub struct StatChangeEvent<T>
+#[derive(Message, Debug, Reflect, PartialEq, Clone, Copy)]
+pub struct StatChangeMessage<T>
 where
     T: RPGStat,
 {
@@ -98,8 +98,8 @@ where
     pub target: Entity,
 }
 
-#[derive(Event, Debug, Reflect, PartialEq, Clone, Copy)]
-pub struct ResourceChangeEvent<T>
+#[derive(Message, Debug, Reflect, PartialEq, Clone, Copy)]
+pub struct ResourceChangeMessage<T>
 where
     T: RPGResource,
 {
