@@ -12,7 +12,8 @@ use systems::{change_resource, delete_stat_mod};
 
 pub mod resource;
 pub mod stat;
-pub mod statmod;
+pub mod stat_change;
+pub mod stat_mod;
 pub mod systems;
 
 #[derive(Debug, Reflect, PartialEq, Eq, Clone, Copy)]
