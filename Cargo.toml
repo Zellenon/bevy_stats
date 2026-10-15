@@ -9,5 +9,5 @@ edition = "2021"
 bevy = "0.18"
 
 [dev-dependencies]
-bevy_turborand = "0.13"
+bevy_rand = "0.15"
 rand = "0.10"
